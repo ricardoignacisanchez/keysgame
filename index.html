@@ -1,0 +1,432 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="practice special keys">
+        <title>Practice special keys</title>
+        <link rel="author" href="Ricardo Sánchez">
+        <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            } 
+
+            body {
+                font-family: arial, sans-serif;
+                font-size: 1em;
+                height: 100vh;
+            }
+            p {
+                padding: 10px 0 10px 0;
+            }
+            .dialog {
+                position: fixed;
+                width: 30%;
+                min-width:  25em;
+                margin: auto;
+                text-align: center;
+                border: 1px solid;
+                padding: 2em;
+                border-radius: 4px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+                left: 50%;
+                transform: translate(-50%, 0);
+                opacity: 0;
+                background-color: white;
+            }
+            .shown {
+                animation-name: shown;
+                animation-timing-function: linear;
+                animation-duration: 1s;  
+                animation-fill-mode: forwards;
+            }
+            @keyframes shown {
+                from {top: 0px;}
+                to {top: 50%; transform: translate(-50%, -50%); opacity:  1;}
+            }
+            .button {
+                background-color: #008CBA;
+                color: white;
+                font-size: 1em;
+                padding: 12px 28px;
+                border-radius: 8px;
+                margin-top: 15px;
+            }
+            .button:hover {
+                color: black;
+                background-color: lightblue;
+                transition-duration: 0.8s;
+            }
+            #game {
+                display: none;
+                width: 100%;
+                height: 100%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: #ebcf92;
+            }
+            #background {
+                min-width: 600px;
+                padding: 20px;
+                background: white;
+                border-radius: 5px;
+            }
+            #trophy {
+                --fa-rotate-angle:  -45deg;
+                color: orange;
+            }
+            #panel {
+                display: flex;
+                justify-content: space-between;
+            }
+            .keyboard {
+                vertical-align: middle;
+                --fa-rotate-angle:  10deg;
+                color: grey;
+            }
+            #score {
+                font-family: 'Bungee Inline', cursive;
+                font-size:  54px;
+            }
+            #instructions {
+                display: flex;
+                justify-content: center;
+                align-content: center;
+            }
+            #press {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            #key {
+                font-family: 'Lexend Deca', sans-serif;
+                margin-top: -8px;
+                padding: 10px;
+                font-size:  3em;
+            }
+            #timepanel {
+                display: flex;
+                justify-content: center;
+            }
+            #time {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 3em;
+                padding: 0 10px;
+                border-radius: 5px;
+            }
+            .rush {
+                animation-name: rush;
+                animation-timing-function: ease-in;
+                animation-duration: 10s;  
+                animation-fill-mode: forwards;
+            }
+            @keyframes rush {
+                from {background-color: #3ebf35;}
+                to {background-color: #e91212;}
+            }
+            #bouncer {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 3em;
+                padding: 0 10px;
+                border-radius: 5px;
+                display: none;
+                position: fixed;
+            }
+            #typed {
+                opacity: 0;
+                text-align: center;
+            }
+            .warn {
+                animation-name: warn;
+                animation-timing-function: linear;
+                animation-duration: 1s;  
+            }
+            @keyframes warn {
+                from {opacity: 0;}
+                50% {opacity: 1;}
+                to {opacity:  0;}
+            }
+
+        </style>
+    <script src="https://kit.fontawesome.com/bb3fa6b88d.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=JetBrains+Mono:wght@200&family=Lexend+Deca:wght@200&display=swap" rel="stylesheet">
+
+    </head>
+    <body>
+        <div id="previous" class="dialog">
+            <p>In this game you will practise the names of the keys on your keyboard.</p>
+            <p>You have 10 seconds per key, and the faster you get, the more points that you get.</p>
+            <p>After 10 seconds without typing the correct key, the program will ask for another key.</p>
+            <p>Get 100 points to go to the next level</p>
+            <div id="ok">
+                <input type="button" name="button" id="button" class="button" value="Start with level 1">
+            </div>
+        </div>
+        <div id="game">
+            <div id="background">
+                <div id="panel">
+                    <div id="scorebox"><i id="trophy" class="fa-solid fa-trophy fa-rotate-by fa-3x"></i><span id="score">0</span>
+                    </div>
+                    <div id="lives"><i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i>
+                    </div>
+                </div>
+                <div id="typed">You typed: <span id="typedkey">alt</span></div>
+                <div id="instructions">
+                    <div id="press"><span>Press key:</span></div>
+                    <div id="key"></div>
+                </div>
+                <div id="timepanel">
+                    <div id="time">10
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bouncer">
+        </div>
+        <div id="win" class="dialog">
+            <p>Congratulations!! You won the game!</p>
+            <p>You scored <span id="pointswin"></span> points in <span id="roundswin"></span> rounds and <span id="guesseswin"></span> guesses.</p>
+            <p>Want to play again?</p>
+            <div class="again">
+                <input type="button" name="againwin" id="againwin" class="button" value="Play again">
+            </div>
+        </div>
+        <div id="lose" class="dialog">
+            <p>Ooops! You lost all your lives</p>
+            <p>You scored <span id="pointslose"></span> points in <span id="roundslose"></span> rounds and <span id="guesseslose"></span> guesses.</p>
+            <p>Want to play again?</p>
+            <div class="again">
+                <input type="button" name="againlose" id="againlose" class="button" value="Play again">
+            </div>
+        </div>
+    </body>
+    <script>
+        document.getElementById("previous").classList.add('shown');
+        document.getElementById("button").addEventListener('click', start);
+        document.getElementById("againwin").addEventListener('click', start);
+        document.getElementById("againlose").addEventListener('click', start);
+
+
+        //level 1: 1 key alone (shift, tab, etc.)
+        let score=0;
+        let tries=0;
+        let guesses=0;
+        let started=false; //he tenido que meter este semáforo porque al pulsar intro o espacio con el evento keydown sin capturar, parece que el navegador pulsaba el botón de start y se desencadenaba un newkey
+        document.getElementById("score").innerHTML = score;
+        const level1keys = [
+            {name:"escape", code: "Escape", hint:""}, 
+            {name:"tab", code: "Tab", hint:""}, 
+            {name:"caps lock", code: "CapsLock", hint:"NOT the shift key"}, 
+            {name:"alt", code: "AltLeft", hint:"left"}, 
+            {name:"left shift", code: "ShiftLeft", hint:"left"}, 
+            {name:"left control", code: "ControlLeft", hint:"left"}, 
+            {name:"space", code: "Space", hint:""}, 
+            {name:"alt graph", code: "AltRight", hint:"right"}, 
+            {name:"context menu", code: "ContextMenu", hint:""}, 
+            {name:"right control", code: "ControlRight", hint:"right"}, 
+            {name:"left cursor", code: "ArrowLeft", hint:"left arrow"}, 
+            {name:"right cursor", code: "ArrowRight", hint:"right arrow"}, 
+            {name:"up cursor", code: "ArrowUp", hint:"up arrow"}, 
+            {name:"down cursor", code: "ArrowDown", hint:"down arrow"}, 
+            {name:"right shift", code: "ShiftRight", hint:"right"}, 
+            {name:"enter", code: "Enter", hint:""}, 
+            {name:"backspace", code: "Backspace", hint:""}, 
+            {name:"alt", code: "AltLeft", hint:"left"}, 
+            {name:"delete", code: "Delete", hint:""}, 
+            {name:"insert", code: "Insert", hint:""}, 
+            {name:"home", code: "Home", hint:""}, 
+            {name:"end", code: "End", hint:""}, 
+            {name:"page down", code: "PageDown", hint:""}, 
+            {name:"page up", code: "PageUp", hint:""}, 
+        ];
+        let level1codes = [];
+        level1keys.forEach(element => level1codes[element.code]=element.name);
+
+
+        let currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+        let remainingtime=10.1;
+        let level1interval = 0;
+        let listeneradded = false;
+
+        function newKey() {
+            tries++;
+            currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+            document.getElementById("key").innerHTML = currentKey.name + ((currentKey.hint != "")?" (" + currentKey.hint + ")":"");
+            remainingtime=10.1;
+            document.getElementById("time").classList.remove('rush');
+            void document.getElementById("time").offsetWidth; //https://css-tricks.com/restart-css-animation/
+
+            if (!listeneradded) {
+                document.addEventListener('keydown', capturelevel1, false);
+                listeneradded = true;
+            }
+            level1interval = setInterval(()=>{
+                remainingtime = remainingtime - 0.1;
+                if (remainingtime <= 0) {
+                    clearInterval(level1interval);
+                    let bouncer = document.getElementById("bouncer");
+                    let timer = document.getElementById("time");
+                    bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                    bouncer.innerHTML = timer.innerHTML;
+                    bouncer.style.display = 'block';
+                    let animation = bouncer.animate([
+                      // keyframes
+                      { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                      { top: document.getElementById("lives").offsetTop + "px", left: document.getElementById("lives").offsetLeft + "px"}
+                    ], {
+                      // timing options
+                      duration: 500,
+                      iterations: 1
+                    });
+                    animation.onfinish = () => {
+                        //bouncer.style.display = 'none';
+
+                        //let keyboard = document.getElementById("lives").children[0];
+                        let keyboard = Array.from(document.getElementById("lives").children).find(element => element.style.display != "none");
+                        let keyboardx = document.getElementById("lives").offsetLeft;
+                        let keyboardy = document.getElementById("lives").offsetTop;
+                        keyboard.style.position="fixed";
+                        let fall = keyboard.animate([
+                          // keyframes
+                          { top: keyboardy + "px", left: keyboardx + "px"},
+                          { top: (document.getElementById("background").offsetTop + document.getElementById("background").offsetHeight) + "px", left: keyboardx + "px", opacity:0},
+                        ], {
+                          // timing options
+                          duration: 600,
+                          iterations: 1
+                        });
+                        fall.onfinish = () => {
+                            keyboard.style.display = 'none';
+
+                            //if (document.getElementById("lives").children.length == 0) {
+                            if (Array.from(document.getElementById("lives").children).find(element => element.style.display != "none") === undefined) {
+                                //losing condition
+                                document.getElementById("pointslose").innerHTML = document.getElementById("score").innerHTML;
+                                document.getElementById("roundslose").innerHTML = tries;
+                                document.getElementById("guesseslose").innerHTML = guesses;
+                                document.getElementById("lose").classList.add('shown');
+                                document.removeEventListener('keydown', capturelevel1);
+                                listeneradded = false;
+                                started = false;
+                            }
+                            else  {
+                                newKey();
+                            }
+                        };
+                    };
+                }
+                else {
+                    document.getElementById("time").innerHTML = remainingtime.toLocaleString(undefined, { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+                }
+            }, 100);
+            document.getElementById("time").classList.add('rush');
+        }
+
+        function updateScore() {
+            const scoreDelta = Math.round(remainingtime); //(remainingtime - 5) * 2; can add or substract points
+            score += scoreDelta;
+            document.getElementById("score").innerHTML = score;
+        }
+
+        function start() {
+            if (started) return;
+            started = true;
+            score=0;
+            tries=0;
+            guesses=0;
+
+            //todo: restituir vidas
+            document.getElementById("score").innerHTML = 0;
+            Array.from(document.getElementById("lives").children).forEach(element => {element.style.display = "inline"; element.style.position="static"});
+
+            document.getElementById("previous").classList.remove('shown');
+            document.getElementById("win").classList.remove('shown');
+            document.getElementById("lose").classList.remove('shown');
+            document.getElementById("game").style.display="flex";
+            
+            newKey();
+        }
+     
+
+        /*//level 2: combinations (ctrl+c, ctrl+v, etc)
+        //level 3: compositions: [], \
+        document.getElementById("background").addEventListener('keydown', (event) => {
+          var name = event.key;
+          var code = event.code;
+          // Alert the key name and key code on keydown
+          console.log(`Key pressed ${name} \r\n Key code value: ${code}`);
+          console.log(event);
+        }, false);*/
+
+        function capturelevel1(event) {
+          var name = event.key;
+          var code = event.code;
+          // Alert the key name and key code on keydown
+          console.log(`Key pressed ${name} \r\n Key code value: ${code}, currentKey.code: ${currentKey.code}`);
+          console.log(event);
+
+
+          guesses++;
+          if (event.code == currentKey.code) {
+            //right guessing condition
+            clearInterval(level1interval);
+            document.removeEventListener('keydown', capturelevel1);
+            listeneradded = false;
+
+            let bouncer = document.getElementById("bouncer");
+            let timer = document.getElementById("time");
+            bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+            bouncer.innerHTML = timer.innerHTML;
+            bouncer.style.display = 'block';
+            let animation = bouncer.animate([
+              // keyframes
+              { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+              { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
+            ], {
+              // timing options
+              duration: 500,
+              iterations: 1
+            });
+            animation.onfinish = () => {
+                updateScore();
+                if (document.getElementById("score").innerHTML >= 100) {
+                    //winning condition
+                    document.getElementById("pointswin").innerHTML = document.getElementById("score").innerHTML;
+                    document.getElementById("roundswin").innerHTML = tries;
+                    document.getElementById("guesseswin").innerHTML = guesses;
+                    document.getElementById("win").classList.add('shown');
+                    document.removeEventListener('keydown', capturelevel1);
+                    listeneradded = false;
+                    started = false;
+                }
+                else  {
+                    newKey();
+                }
+            }
+          }
+          else {
+            //wrong guessing condition
+            if (event.code in level1codes) {
+                document.getElementById("typedkey").innerHTML = level1codes[event.code];
+            }
+            else {
+                if (event.code.startsWith("Key")) {
+                    document.getElementById("typedkey").innerHTML = event.key;
+                }
+                else {
+                    document.getElementById("typedkey").innerHTML = event.code;
+                }
+            }
+            document.getElementById("typed").classList.remove('warn');
+            void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
+            document.getElementById("typed").classList.add('warn');
+          }
+          event.preventDefault();
+        }
+
+    </script>
+</html>
