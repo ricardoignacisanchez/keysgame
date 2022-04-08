@@ -1,9 +1,9 @@
 <!doctype html>
-<html>
+<html lang="es">
     <head>
         <meta charset="utf-8">
         <meta name="description" content="practice special keys">
-        <title>Practice special keys</title>
+        <title>Practica las teclas especiales</title>
         <link rel="author" href="Ricardo Sánchez">
         <style>
             * {
@@ -158,10 +158,10 @@
     </head>
     <body>
         <div id="previous" class="dialog">
-            <p>In this game you will practise the names of the keys on your keyboard.</p>
-            <p>You have 10 seconds per key, and the faster you get, the more points that you get.</p>
-            <p>After 10 seconds without typing the correct key, the program will ask for another key.</p>
-            <p>Get 100 points to go to the next level</p>
+            <p>En este juego practicarás los nombres de las teclas del teclado.</p>
+            <p>Tienes 10 segundos por tecla, y cuanto más rápido teclees, más puntos consigues.</p>
+            <p>Después de 10 segundos sin acertar la tecla correcta, el juego preguntará por otra tecla.</p>
+            <p>Obtén 100 puntos para pasar al siguiente nivel</p>
             <div id="ok">
                 <input type="button" name="button" id="button" class="button" value="Start with level 1">
             </div>
@@ -174,9 +174,9 @@
                     <div id="lives"><i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i>
                     </div>
                 </div>
-                <div id="typed">You typed: <span id="typedkey">alt</span></div>
+                <div id="typed">Has tecleado: <span id="typedkey"></span></div>
                 <div id="instructions">
-                    <div id="press"><span>Press key:</span></div>
+                    <div id="press"><span>Pulsa:</span></div>
                     <div id="key"></div>
                 </div>
                 <div id="timepanel">
@@ -188,19 +188,19 @@
         <div id="bouncer">
         </div>
         <div id="win" class="dialog">
-            <p>Congratulations!! You won the game!</p>
-            <p>You scored <span id="pointswin"></span> points in <span id="roundswin"></span> rounds and <span id="guesseswin"></span> guesses.</p>
-            <p>Want to play again?</p>
+            <p>¡¡Enhorabuena!! ¡Has ganado!</p>
+            <p>Has conseguido <span id="pointswin"></span> puntos en <span id="roundswin"></span> rondas y <span id="guesseswin"></span> intentos.</p>
+            <p>¿Quieres volver a jugar?</p>
             <div class="again">
-                <input type="button" name="againwin" id="againwin" class="button" value="Play again">
+                <input type="button" name="againwin" id="againwin" class="button" value="Volver a jugar">
             </div>
         </div>
         <div id="lose" class="dialog">
-            <p>Ooops! You lost all your lives</p>
-            <p>You scored <span id="pointslose"></span> points in <span id="roundslose"></span> rounds and <span id="guesseslose"></span> guesses.</p>
-            <p>Want to play again?</p>
+            <p>¡Ups! Has perdido todas tus vidas</p>
+            <p>Has conseguido <span id="pointslose"></span> puntos en <span id="roundslose"></span> rondas y <span id="guesseslose"></span> intentos.</p>
+            <p>¿Quieres volver a jugar?</p>
             <div class="again">
-                <input type="button" name="againlose" id="againlose" class="button" value="Play again">
+                <input type="button" name="againlose" id="againlose" class="button" value="Volver a jugar">
             </div>
         </div>
     </body>
@@ -219,29 +219,29 @@
         document.getElementById("score").innerHTML = score;
         const level1keys = [
             {name:"escape", code: "Escape", hint:""}, 
-            {name:"tab", code: "Tab", hint:""}, 
-            {name:"caps lock", code: "CapsLock", hint:"NOT the shift key"}, 
+            {name:"tabulador", code: "Tab", hint:""}, 
+            {name:"bloqueo de mayúsculas", code: "CapsLock", hint:"NO la tecla de mayúsculas"}, 
+            {name:"alt", code: "AltLeft", hint:"izquierdo"}, 
+            {name:"mayúsculas izquierda", code: "ShiftLeft", hint:"NO el bloqueo de mayúsculas"}, 
+            {name:"control izquierdo", code: "ControlLeft", hint:"el izquierdo"}, 
+            {name:"espacio", code: "Space", hint:""}, 
+            {name:"alt gráfico", code: "AltRight", hint:"el de la derecha"}, 
+            {name:"menú contextual", code: "ContextMenu", hint:""}, 
+            {name:"control derecho", code: "ControlRight", hint:"el derecho"}, 
+            {name:"cursor izquierdo", code: "ArrowLeft", hint:"flecha izquierda"}, 
+            {name:"cursor derecho", code: "ArrowRight", hint:"flecha derecha"}, 
+            {name:"cursor arriba", code: "ArrowUp", hint:"flecha arriba"}, 
+            {name:"cursor abajo", code: "ArrowDown", hint:"flecha abajo"}, 
+            {name:"mayúsculas derecha", code: "ShiftRight", hint:"la de la derecha"}, 
+            {name:"intro", code: "Enter", hint:""}, 
+            {name:"borrar", code: "Backspace", hint:""}, 
             {name:"alt", code: "AltLeft", hint:"left"}, 
-            {name:"left shift", code: "ShiftLeft", hint:"left"}, 
-            {name:"left control", code: "ControlLeft", hint:"left"}, 
-            {name:"space", code: "Space", hint:""}, 
-            {name:"alt graph", code: "AltRight", hint:"right"}, 
-            {name:"context menu", code: "ContextMenu", hint:""}, 
-            {name:"right control", code: "ControlRight", hint:"right"}, 
-            {name:"left cursor", code: "ArrowLeft", hint:"left arrow"}, 
-            {name:"right cursor", code: "ArrowRight", hint:"right arrow"}, 
-            {name:"up cursor", code: "ArrowUp", hint:"up arrow"}, 
-            {name:"down cursor", code: "ArrowDown", hint:"down arrow"}, 
-            {name:"right shift", code: "ShiftRight", hint:"right"}, 
-            {name:"enter", code: "Enter", hint:""}, 
-            {name:"backspace", code: "Backspace", hint:""}, 
-            {name:"alt", code: "AltLeft", hint:"left"}, 
-            {name:"delete", code: "Delete", hint:""}, 
-            {name:"insert", code: "Insert", hint:""}, 
-            {name:"home", code: "Home", hint:""}, 
-            {name:"end", code: "End", hint:""}, 
-            {name:"page down", code: "PageDown", hint:""}, 
-            {name:"page up", code: "PageUp", hint:""}, 
+            {name:"suprimir", code: "Delete", hint:""}, 
+            {name:"insertar", code: "Insert", hint:""}, 
+            {name:"inicio", code: "Home", hint:""}, 
+            {name:"fin", code: "End", hint:""}, 
+            {name:"avance de página", code: "PageDown", hint:""}, 
+            {name:"retroceso de página", code: "PageUp", hint:""}, 
         ];
         let level1codes = [];
         level1keys.forEach(element => level1codes[element.code]=element.name);
