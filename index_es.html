@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html>
     <head>
         <meta charset="utf-8">
         <meta name="description" content="practice special keys">
@@ -101,8 +101,9 @@
                 justify-content: center;
             }
             #key {
-                font-family: 'Lexend Deca', sans-serif;
+                font-family: 'Literata', serif;
                 margin-top: -8px;
+                margin-bottom: 10px;
                 padding: 10px;
                 font-size:  3em;
             }
@@ -148,12 +149,18 @@
                 50% {opacity: 1;}
                 to {opacity:  0;}
             }
-
+            #level {
+                text-align: center;
+                margin-bottom: -1.5em;
+                padding-top: 0.5em;
+                font-family: 'Press Start 2P', cursive;
+                font-size: 1.5em;
+            }
         </style>
     <script src="https://kit.fontawesome.com/bb3fa6b88d.js" crossorigin="anonymous"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=JetBrains+Mono:wght@200&family=Lexend+Deca:wght@200&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=JetBrains+Mono:wght@200&family=Literata:wght@300&family=Press+Start+2P&display=swap" rel="stylesheet">
 
     </head>
     <body>
@@ -163,18 +170,19 @@
             <p>Después de 10 segundos sin acertar la tecla correcta, el juego preguntará por otra tecla.</p>
             <p>Obtén 100 puntos para pasar al siguiente nivel</p>
             <div id="ok">
-                <input type="button" name="button" id="button" class="button" value="Start with level 1">
+                <input type="button" name="start" id="start" class="button" value="Jugar el nivel 1">
             </div>
         </div>
         <div id="game">
             <div id="background">
+                <div id="level">Nivel <span id="levelnumber">1</span></div>
                 <div id="panel">
                     <div id="scorebox"><i id="trophy" class="fa-solid fa-trophy fa-rotate-by fa-3x"></i><span id="score">0</span>
                     </div>
                     <div id="lives"><i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i>
                     </div>
                 </div>
-                <div id="typed">Has tecleado: <span id="typedkey"></span></div>
+                <div id="typed">Has tecleado: <span id="typedkey">alt</span></div>
                 <div id="instructions">
                     <div id="press"><span>Pulsa:</span></div>
                     <div id="key"></div>
@@ -188,27 +196,39 @@
         <div id="bouncer">
         </div>
         <div id="win" class="dialog">
-            <p>¡¡Enhorabuena!! ¡Has ganado!</p>
+            <p>¡¡Enhorabuena!! ¡Has acabado el nivel 1!</p>
             <p>Has conseguido <span id="pointswin"></span> puntos en <span id="roundswin"></span> rondas y <span id="guesseswin"></span> intentos.</p>
-            <p>¿Quieres volver a jugar?</p>
+            <p>En el nivel 2, tendrás que pulsar combinaciones de teclas, como control + c. ¿Quieres ir a por ello?</p>
             <div class="again">
-                <input type="button" name="againwin" id="againwin" class="button" value="Volver a jugar">
+                <input type="button" name="againwin" id="againwin" class="button" value="Jugar el nivel 2">
             </div>
         </div>
         <div id="lose" class="dialog">
             <p>¡Ups! Has perdido todas tus vidas</p>
             <p>Has conseguido <span id="pointslose"></span> puntos en <span id="roundslose"></span> rondas y <span id="guesseslose"></span> intentos.</p>
-            <p>¿Quieres volver a jugar?</p>
+            <p>¿Quieres jugar otra vez?</p>
             <div class="again">
-                <input type="button" name="againlose" id="againlose" class="button" value="Volver a jugar">
+                <input type="button" name="againlose" id="againlose" class="button" value="Jugar otra vez">
+            </div>
+        </div>
+        <div id="win2" class="dialog">
+            <p>¡¡Enhorabuena!! ¡Has ganado!</p>
+            <p>Has conseguido <span id="pointswin2"></span> puntos en <span id="roundswin2"></span> rondas y <span id="guesseswin2"></span> intentos.</p>
+            <p>¿Quieres jugar otra vez?</p>
+            <div class="again">
+                <input type="button" name="restart" id="restart" class="button" value="Jugar otra vez">
             </div>
         </div>
     </body>
     <script>
+        //todo: esto funciona solo con el teclado qwerty en español. Si se pone en otro idioma, muchas cosas fallarán. 
+        //Esto a veces se podría remediar, por ejemplo, para preguntar por el zoom+, en lugar de preguntar por el "code" (para el +), se puede preguntar por la "key". Requiere una configuración diferente, en la que se indique por qué hay que preguntar
+        //El problema es que a veces no tiene remedio. Hay teclas, como el símbolo "igual", que en español van en el nivel 2 y en inglés irían en el 1 => requerirían una configuración diferente según el idioma
         document.getElementById("previous").classList.add('shown');
-        document.getElementById("button").addEventListener('click', start);
-        document.getElementById("againwin").addEventListener('click', start);
-        document.getElementById("againlose").addEventListener('click', start);
+        document.getElementById("start").addEventListener('click', ()=>start(2));
+        document.getElementById("againwin").addEventListener('click', ()=>start(2));
+        document.getElementById("againlose").addEventListener('click', ()=>start(1));
+        document.getElementById("restart").addEventListener('click', ()=>start(1));
 
 
         //level 1: 1 key alone (shift, tab, etc.)
@@ -221,6 +241,7 @@
             {name:"escape", code: "Escape", hint:""}, 
             {name:"tabulador", code: "Tab", hint:""}, 
             {name:"bloqueo de mayúsculas", code: "CapsLock", hint:"NO la tecla de mayúsculas"}, 
+            {name:"num lock", code: "NumLock", hint:"number lock"}, 
             {name:"alt", code: "AltLeft", hint:"izquierdo"}, 
             {name:"mayúsculas izquierda", code: "ShiftLeft", hint:"NO el bloqueo de mayúsculas"}, 
             {name:"control izquierdo", code: "ControlLeft", hint:"el izquierdo"}, 
@@ -242,6 +263,21 @@
             {name:"fin", code: "End", hint:""}, 
             {name:"avance de página", code: "PageDown", hint:""}, 
             {name:"retroceso de página", code: "PageUp", hint:""}, 
+            {name:"º", code: "Backquote", hint:"como en 1º"}, 
+            {name:"¡", code: "Equal", hint:"abrir exclamación"}, 
+            {name:"'", code: "Minus", hint:"comilla simple o apóstrofo"}, 
+            {name:"ç", code: "Backslash", hint:"c con cedilla"}, 
+            {name:"+", code: "BracketRight", hint:"símbolo de la suma, teclado alfanumérico"}, 
+            {name:"-", code: "Slash", hint:"símbolo de la resta o guion alto, teclado alfanumérico"}, 
+            {name:".", code: "Period", hint:"punto"}, 
+            {name:",", code: "Comma", hint:"coma"}, 
+            {name:"ñ", code: "Semicolon", hint:""}, 
+            {name:"/", code: "NumpadDivide", hint:"barra de dividir, teclado extendido"}, 
+            {name:"*", code: "NumpadMultiply", hint:"asterisco, teclado extendido"}, 
+            {name:"+", code: "NumpadAdd", hint:"símbolo de la suma, teclado extendido"}, 
+            {name:"-", code: "NumpadSubstract", hint:"síbolo de la resta o guion alto, teclado extendido"}, 
+            {name:".", code: "NumpadDecimal", hint:"punto decimal, teclado extendido"}, 
+            {name:"intro derecho", code: "NumpadEnter", hint:"intro, teclado extendido"}, 
         ];
         let level1codes = [];
         level1keys.forEach(element => level1codes[element.code]=element.name);
@@ -251,24 +287,42 @@
         let remainingtime=10.1;
         let level1interval = 0;
         let listeneradded = false;
+        let animating = false;
 
-        function newKey() {
+        function newKey(level) {
             tries++;
-            currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+            if (level == 1) {
+                currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+            }
+            else {
+                currentKey=level2keys[Math.floor(Math.random() * level2keys.length)];
+            }
             document.getElementById("key").innerHTML = currentKey.name + ((currentKey.hint != "")?" (" + currentKey.hint + ")":"");
             remainingtime=10.1;
             document.getElementById("time").classList.remove('rush');
             void document.getElementById("time").offsetWidth; //https://css-tricks.com/restart-css-animation/
 
             if (!listeneradded) {
-                document.addEventListener('keydown', capturelevel1, false);
+                if (level == 1) {
+                    document.addEventListener('keydown', capturelevel1, false);
+                }
+                else {
+                    document.addEventListener('keydown', downlevel2, false);
+                    document.addEventListener('keyup', uplevel2, false);
+                }
                 listeneradded = true;
             }
             level1interval = setInterval(()=>{
                 remainingtime = remainingtime - 0.1;
                 if (remainingtime <= 0) {
                     //losing life condition
-                    document.removeEventListener('keydown', capturelevel1);
+                    //important not to respond to events during the animation
+                    if (level == 1) {
+                        document.removeEventListener('keydown', capturelevel1, false);
+                    }
+                    else {
+                        animating = true;
+                    }
                     listeneradded = false;
 
                     clearInterval(level1interval);
@@ -287,9 +341,6 @@
                       iterations: 1
                     });
                     animation.onfinish = () => {
-                        //bouncer.style.display = 'none';
-
-                        //let keyboard = document.getElementById("lives").children[0];
                         let keyboard = Array.from(document.getElementById("lives").children).find(element => element.style.display != "none");
                         let keyboardx = document.getElementById("lives").offsetLeft;
                         let keyboardy = document.getElementById("lives").offsetTop;
@@ -305,6 +356,7 @@
                         });
                         fall.onfinish = () => {
                             keyboard.style.display = 'none';
+                            animating = false;
 
                             //if (document.getElementById("lives").children.length == 0) {
                             if (Array.from(document.getElementById("lives").children).find(element => element.style.display != "none") === undefined) {
@@ -316,7 +368,7 @@
                                 started = false;
                             }
                             else  {
-                                newKey();
+                                newKey(level);
                             }
                         };
                     };
@@ -334,23 +386,26 @@
             document.getElementById("score").innerHTML = score;
         }
 
-        function start() {
+        function start(level) {
             if (started) return;
             started = true;
             score=0;
             tries=0;
             guesses=0;
 
-            //todo: restituir vidas
             document.getElementById("score").innerHTML = 0;
-            Array.from(document.getElementById("lives").children).forEach(element => {element.style.display = "inline"; element.style.position="static"});
+            document.getElementById("levelnumber").innerHTML = level;
+            if (level == 1) {
+                Array.from(document.getElementById("lives").children).forEach(element => {element.style.display = "inline"; element.style.position="static"});
+            }
 
             document.getElementById("previous").classList.remove('shown');
             document.getElementById("win").classList.remove('shown');
             document.getElementById("lose").classList.remove('shown');
+            document.getElementById("win2").classList.remove('shown');
             document.getElementById("game").style.display="flex";
             
-            newKey();
+            newKey(level);
         }
      
 
@@ -365,70 +420,212 @@
         }, false);*/
 
         function capturelevel1(event) {
-          var name = event.key;
-          var code = event.code;
-          // Alert the key name and key code on keydown
-          console.log(`Key pressed ${name} \r\n Key code value: ${code}, currentKey.code: ${currentKey.code}`);
-          console.log(event);
+            console.log(event);
 
+            guesses++;
+            if (event.code == currentKey.code) {
+                //right guessing condition
+                clearInterval(level1interval);
+                document.removeEventListener('keydown', capturelevel1); //important not to respond to events during the animation
+                listeneradded = false;
 
-          guesses++;
-          if (event.code == currentKey.code) {
-            //right guessing condition
-            clearInterval(level1interval);
-            document.removeEventListener('keydown', capturelevel1);
-            listeneradded = false;
-
-            let bouncer = document.getElementById("bouncer");
-            let timer = document.getElementById("time");
-            bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
-            bouncer.innerHTML = timer.innerHTML;
-            bouncer.style.display = 'block';
-            let animation = bouncer.animate([
-              // keyframes
-              { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
-              { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
-            ], {
-              // timing options
-              duration: 500,
-              iterations: 1
-            });
-            animation.onfinish = () => {
-                updateScore();
-                if (document.getElementById("score").innerHTML >= 100) {
-                    //winning condition
-                    document.getElementById("pointswin").innerHTML = document.getElementById("score").innerHTML;
-                    document.getElementById("roundswin").innerHTML = tries;
-                    document.getElementById("guesseswin").innerHTML = guesses;
-                    document.getElementById("win").classList.add('shown');
-                    document.removeEventListener('keydown', capturelevel1);
-                    listeneradded = false;
-                    started = false;
+                let bouncer = document.getElementById("bouncer");
+                let timer = document.getElementById("time");
+                bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                bouncer.innerHTML = timer.innerHTML;
+                bouncer.style.display = 'block';
+                let animation = bouncer.animate([
+                  // keyframes
+                  { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                  { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
+                ], {
+                  // timing options
+                  duration: 500,
+                  iterations: 1
+                });
+                animation.onfinish = () => {
+                    updateScore();
+                    if (document.getElementById("score").innerHTML >= 100) {
+                        //winning condition
+                        document.getElementById("pointswin").innerHTML = document.getElementById("score").innerHTML;
+                        document.getElementById("roundswin").innerHTML = tries;
+                        document.getElementById("guesseswin").innerHTML = guesses;
+                        document.getElementById("win").classList.add('shown');
+                        document.removeEventListener('keydown', capturelevel1);
+                        listeneradded = false;
+                        started = false;
+                    }
+                    else  {
+                        newKey(1);
+                    }
                 }
-                else  {
-                    newKey();
-                }
-            }
-          }
-          else {
-            //wrong guessing condition
-            if (event.code in level1codes) {
-                document.getElementById("typedkey").innerHTML = level1codes[event.code];
             }
             else {
-                if (event.code.startsWith("Key")) {
-                    document.getElementById("typedkey").innerHTML = event.key;
+                //wrong guessing condition
+                if (event.code in level1codes) {
+                    document.getElementById("typedkey").innerHTML = level1codes[event.code];
                 }
                 else {
-                    document.getElementById("typedkey").innerHTML = event.code;
+                    if (event.code.startsWith("Key")) {
+                        document.getElementById("typedkey").innerHTML = event.key;
+                    }
+                    else {
+                        document.getElementById("typedkey").innerHTML = event.code;
+                    }
                 }
+                document.getElementById("typed").classList.remove('warn');
+                void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
+                document.getElementById("typed").classList.add('warn');
             }
-            document.getElementById("typed").classList.remove('warn');
-            void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
-            document.getElementById("typed").classList.add('warn');
-          }
-          event.preventDefault();
+            event.preventDefault();
         }
 
+        const level2keys = [
+            {name:"ctrl + c", code1: ["ControlLeft","ControlRight"], code2: ["KeyC"], hint:""},
+            {name:"ctrl + v", code1: ["ControlLeft","ControlRight"], code2: ["KeyV"], hint:""},
+            {name:"ctrl + x", code1: ["ControlLeft","ControlRight"], code2: ["KeyX"], hint:""},
+            {name:"ctrl + z", code1: ["ControlLeft","ControlRight"], code2: ["KeyZ"], hint:""},
+            {name:"ctrl +", code1: ["ControlLeft","ControlRight"], code2: ["BracketRight", "NumpadAdd"], hint:"acercar zoom"},
+            {name:"ctrl -", code1: ["ControlLeft","ControlRight"], code2: ["Slash", "NumpadSubtract"], hint:"alejar zoom"},
+
+            {name:"ª", code1: ["ShiftLeft","ShiftRight"], code2: ["Backquote"], hint:"as in 1ª"},
+            {name:"!", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit1"], hint:"cerrar exclamación"},
+            {name:"\"", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit2"], hint:"comilla doble"},
+            {name:"$", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit4"], hint:"dólar"},
+            {name:"%", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit5"], hint:"porcentaje"},
+            {name:"&", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit6"], hint:"ampersand"},
+            {name:"/", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit7"], hint:"barra del 7"},
+            {name:"(", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit8"], hint:"paréntesis izquierdo"},
+            {name:")", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit9"], hint:"paréntesis derecho"},
+            {name:"=", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit0"], hint:"igual"},
+            {name:"?", code1: ["ShiftLeft","ShiftRight"], code2: ["Minus"], hint:"cerrar interrogación"},
+            {name:"¿", code1: ["ShiftLeft","ShiftRight"], code2: ["Equal"], hint:"abrir interrogación"},
+            {name:";", code1: ["ShiftLeft","ShiftRight"], code2: ["Comma"], hint:"punto y comma"},
+            {name:":", code1: ["ShiftLeft","ShiftRight"], code2: ["Period"], hint:"dos puntos"},
+            {name:"_", code1: ["ShiftLeft","ShiftRight"], code2: ["Slash"], hint:"subrayado o guion bajo"},
+
+            {name:"\\", code1: ["AltRight"], code2: ["Backquote"], hint:"barra invertida"}, 
+            {name:"|", code1: ["AltRight"], code2: ["Digit1"], hint:"barra de tubería"}, 
+            {name:"@", code1: ["AltRight"], code2: ["Digit2"], hint:"arroba"}, 
+            {name:"#", code1: ["AltRight"], code2: ["Digit3"], hint:"almohadilla o hashtag"}, 
+            {name:"€", code1: ["AltRight"], code2: ["KeyE"], hint:"euro"}, 
+            {name:"[", code1: ["AltRight"], code2: ["BracketLeft"], hint:"corchete izquierdo"}, 
+            {name:"]", code1: ["AltRight"], code2: ["BracketRight"], hint:"corchete derecho"}, 
+            {name:"{", code1: ["AltRight"], code2: ["Quote"], hint:"llave izquierda"}, 
+            {name:"}", code1: ["AltRight"], code2: ["Backslash"], hint:"llave derecha"}, 
+        ];
+
+        let key1="";
+        let key2="";
+        let keyspressed = 0;
+
+        function uplevel2(event) {
+            console.log("keyup, code" + event.code);
+            keyspressed--;
+            if (keyspressed == 1) {
+                key2 = "";
+            }
+            if (keyspressed == 0) {
+                key1 = "";
+                key2 = "";
+            }
+            //console.log("KEYUP. keyspressed: " + keyspressed + ", key1: " + key1 + ", key2: " + key2);
+        }
+
+        function downlevel2(event) {
+            console.log("keydown, code" + event.code);
+
+            keyspressed++;
+            if (keyspressed == 1) {
+                key1 = event.code;
+            }
+            if ((keyspressed == 3) && (key2 == "Quote" || key2 == "BracketLeft")) {
+                keyspressed--;
+                key2 = event.code;
+            }
+            if (keyspressed == 2) {
+                key2 = event.code;
+                if (key1 == key2) {
+                    //problem with long presses
+                    key2="";
+                    keyspressed--;
+                    return;
+                }
+                if (animating) return; //avoid race conditions
+                guesses++;
+                if (currentKey.code1.includes(key1) && currentKey.code2.includes(key2)) {
+                    //right guessing condition
+                    clearInterval(level1interval);
+
+                    let bouncer = document.getElementById("bouncer");
+                    let timer = document.getElementById("time");
+                    bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                    bouncer.innerHTML = timer.innerHTML;
+                    bouncer.style.display = 'block';
+                    let animating = true;
+                    let animation = bouncer.animate([
+                        // keyframes
+                        { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                        { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
+                    ], {
+                        // timing options
+                        duration: 500,
+                        iterations: 1
+                    });
+                    animation.onfinish = () => {
+                        updateScore();
+                        animating = false;
+                        if (document.getElementById("score").innerHTML >= 100) {
+                            //winning condition
+                            document.getElementById("pointswin2").innerHTML = document.getElementById("score").innerHTML;
+                            document.getElementById("roundswin2").innerHTML = tries;
+                            document.getElementById("guesseswin2").innerHTML = guesses;
+                            document.getElementById("win2").classList.add('shown');
+                            document.removeEventListener('keydown', downlevel2);
+                            document.removeEventListener('keyup', uplevel2);
+                            listeneradded = false;
+                            started = false;
+                        }
+                        else  {
+                            newKey(2);
+                        }
+                    }
+                }
+                else {
+                    //wrong guessing condition
+                    let keyname1 = "", keyname2 = "";
+                    if (key1 in level1codes) {
+                        keyname1 = level1codes[key1];
+                    }
+                    else if (key1.startsWith("Key")) {
+                        keyname1 = key1.substring(3);
+                    }
+                    else if (key1.startsWith("Digit")) {
+                        keyname1 = key1.substring(5);
+                    }
+                    else {
+                        keyname1 = key1;
+                    }
+                    if (key2 in level1codes) {
+                        keyname2 = level1codes[key2];
+                    }
+                    else if (key2.startsWith("Key")) {
+                        keyname2 = key2.substring(3);
+                    }
+                    else if (key2.startsWith("Digit")) {
+                        keyname2 = key2.substring(5);
+                    }
+                    else {
+                        keyname2 = key2;
+                    }
+                    document.getElementById("typedkey").innerHTML = keyname1 + " + " + keyname2;
+                    document.getElementById("typed").classList.remove('warn');
+                    void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
+                    document.getElementById("typed").classList.add('warn');
+                }
+            }
+            //console.log("KEYDOWN. keyspressed: " + keyspressed + ", key1: " + key1 + ", key2: " + key2);
+            event.preventDefault();
+        }
     </script>
 </html>
