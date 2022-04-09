@@ -225,7 +225,7 @@
         //Esto a veces se podría remediar, por ejemplo, para preguntar por el zoom+, en lugar de preguntar por el "code" (para el +), se puede preguntar por la "key". Requiere una configuración diferente, en la que se indique por qué hay que preguntar
         //El problema es que a veces no tiene remedio. Hay teclas, como el símbolo "igual", que en español van en el nivel 2 y en inglés irían en el 1 => requerirían una configuración diferente según el idioma
         document.getElementById("previous").classList.add('shown');
-        document.getElementById("start").addEventListener('click', ()=>start(2));
+        document.getElementById("start").addEventListener('click', ()=>start(1));
         document.getElementById("againwin").addEventListener('click', ()=>start(2));
         document.getElementById("againlose").addEventListener('click', ()=>start(1));
         document.getElementById("restart").addEventListener('click', ()=>start(1));
@@ -256,7 +256,6 @@
             {name:"mayúsculas derecha", code: "ShiftRight", hint:"la de la derecha"}, 
             {name:"intro", code: "Enter", hint:""}, 
             {name:"borrar", code: "Backspace", hint:""}, 
-            {name:"alt", code: "AltLeft", hint:"left"}, 
             {name:"suprimir", code: "Delete", hint:""}, 
             {name:"insertar", code: "Insert", hint:""}, 
             {name:"inicio", code: "Home", hint:""}, 
@@ -275,9 +274,9 @@
             {name:"/", code: "NumpadDivide", hint:"barra de dividir, teclado extendido"}, 
             {name:"*", code: "NumpadMultiply", hint:"asterisco, teclado extendido"}, 
             {name:"+", code: "NumpadAdd", hint:"símbolo de la suma, teclado extendido"}, 
-            {name:"-", code: "NumpadSubstract", hint:"síbolo de la resta o guion alto, teclado extendido"}, 
+            {name:"-", code: "NumpadSubstract", hint:"símbolo de la resta o guion alto, teclado extendido"}, 
             {name:".", code: "NumpadDecimal", hint:"punto decimal, teclado extendido"}, 
-            {name:"intro derecho", code: "NumpadEnter", hint:"intro, teclado extendido"}, 
+            {name:"intro derecho", code: "NumpadEnter", hint:"teclado extendido"}, 
         ];
         let level1codes = [];
         level1keys.forEach(element => level1codes[element.code]=element.name);
@@ -365,6 +364,9 @@
                                 document.getElementById("roundslose").innerHTML = tries;
                                 document.getElementById("guesseslose").innerHTML = guesses;
                                 document.getElementById("lose").classList.add('shown');
+                                document.removeEventListener('keydown', capturelevel1);
+                                document.removeEventListener('keydown', downlevel2);
+                                document.removeEventListener('keyup', uplevel2);
                                 started = false;
                             }
                             else  {
@@ -408,16 +410,6 @@
             newKey(level);
         }
      
-
-        /*//level 2: combinations (ctrl+c, ctrl+v, etc)
-        //level 3: compositions: [], \
-        document.getElementById("background").addEventListener('keydown', (event) => {
-          var name = event.key;
-          var code = event.code;
-          // Alert the key name and key code on keydown
-          console.log(`Key pressed ${name} \r\n Key code value: ${code}`);
-          console.log(event);
-        }, false);*/
 
         function capturelevel1(event) {
             console.log(event);
@@ -481,38 +473,38 @@
         }
 
         const level2keys = [
-            {name:"ctrl + c", code1: ["ControlLeft","ControlRight"], code2: ["KeyC"], hint:""},
-            {name:"ctrl + v", code1: ["ControlLeft","ControlRight"], code2: ["KeyV"], hint:""},
-            {name:"ctrl + x", code1: ["ControlLeft","ControlRight"], code2: ["KeyX"], hint:""},
-            {name:"ctrl + z", code1: ["ControlLeft","ControlRight"], code2: ["KeyZ"], hint:""},
-            {name:"ctrl +", code1: ["ControlLeft","ControlRight"], code2: ["BracketRight", "NumpadAdd"], hint:"acercar zoom"},
-            {name:"ctrl -", code1: ["ControlLeft","ControlRight"], code2: ["Slash", "NumpadSubtract"], hint:"alejar zoom"},
+            {name:"ctrl + c", modifier: "control", code: ["KeyC"], hint:""},
+            {name:"ctrl + v", modifier: "control", code: ["KeyV"], hint:""},
+            {name:"ctrl + x", modifier: "control", code: ["KeyX"], hint:""},
+            {name:"ctrl + z", modifier: "control", code: ["KeyZ"], hint:""},
+            {name:"ctrl +", modifier: "control", code: ["BracketRight", "NumpadAdd"], hint:"acercar zoom"},
+            {name:"ctrl -", modifier: "control", code: ["Slash", "NumpadSubtract"], hint:"alejar zoom"},
 
-            {name:"ª", code1: ["ShiftLeft","ShiftRight"], code2: ["Backquote"], hint:"as in 1ª"},
-            {name:"!", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit1"], hint:"cerrar exclamación"},
-            {name:"\"", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit2"], hint:"comilla doble"},
-            {name:"$", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit4"], hint:"dólar"},
-            {name:"%", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit5"], hint:"porcentaje"},
-            {name:"&", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit6"], hint:"ampersand"},
-            {name:"/", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit7"], hint:"barra del 7"},
-            {name:"(", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit8"], hint:"paréntesis izquierdo"},
-            {name:")", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit9"], hint:"paréntesis derecho"},
-            {name:"=", code1: ["ShiftLeft","ShiftRight"], code2: ["Digit0"], hint:"igual"},
-            {name:"?", code1: ["ShiftLeft","ShiftRight"], code2: ["Minus"], hint:"cerrar interrogación"},
-            {name:"¿", code1: ["ShiftLeft","ShiftRight"], code2: ["Equal"], hint:"abrir interrogación"},
-            {name:";", code1: ["ShiftLeft","ShiftRight"], code2: ["Comma"], hint:"punto y comma"},
-            {name:":", code1: ["ShiftLeft","ShiftRight"], code2: ["Period"], hint:"dos puntos"},
-            {name:"_", code1: ["ShiftLeft","ShiftRight"], code2: ["Slash"], hint:"subrayado o guion bajo"},
+            {name:"ª", modifier: "shift", code: ["Backquote"], hint:"como en 1ª"},
+            {name:"!", modifier: "shift", code: ["Digit1"], hint:"cerrar exclamación"},
+            {name:"\"", modifier: "shift", code: ["Digit2"], hint:"comilla doble"},
+            {name:"$", modifier: "shift", code: ["Digit4"], hint:"dólar"},
+            {name:"%", modifier: "shift", code: ["Digit5"], hint:"porcentaje"},
+            {name:"&", modifier: "shift", code: ["Digit6"], hint:"ampersand"},
+            {name:"/", modifier: "shift", code: ["Digit7"], hint:"barra del 7"},
+            {name:"(", modifier: "shift", code: ["Digit8"], hint:"paréntesis izquierdo"},
+            {name:")", modifier: "shift", code: ["Digit9"], hint:"paréntesis derecho"},
+            {name:"=", modifier: "shift", code: ["Digit0"], hint:"igual"},
+            {name:"?", modifier: "shift", code: ["Minus"], hint:"cerrar interrogación"},
+            {name:"¿", modifier: "shift", code: ["Equal"], hint:"abrir interrogación"},
+            {name:";", modifier: "shift", code: ["Comma"], hint:"punto y comma"},
+            {name:":", modifier: "shift", code: ["Period"], hint:"dos puntos"},
+            {name:"_", modifier: "shift", code: ["Slash"], hint:"subrayado o guion bajo"},
 
-            {name:"\\", code1: ["AltRight"], code2: ["Backquote"], hint:"barra invertida"}, 
-            {name:"|", code1: ["AltRight"], code2: ["Digit1"], hint:"barra de tubería"}, 
-            {name:"@", code1: ["AltRight"], code2: ["Digit2"], hint:"arroba"}, 
-            {name:"#", code1: ["AltRight"], code2: ["Digit3"], hint:"almohadilla o hashtag"}, 
-            {name:"€", code1: ["AltRight"], code2: ["KeyE"], hint:"euro"}, 
-            {name:"[", code1: ["AltRight"], code2: ["BracketLeft"], hint:"corchete izquierdo"}, 
-            {name:"]", code1: ["AltRight"], code2: ["BracketRight"], hint:"corchete derecho"}, 
-            {name:"{", code1: ["AltRight"], code2: ["Quote"], hint:"llave izquierda"}, 
-            {name:"}", code1: ["AltRight"], code2: ["Backslash"], hint:"llave derecha"}, 
+            {name:"\\", modifier: "AltGr", code2: ["Backquote"], hint:"barra invertida"}, 
+            {name:"|", modifier: "AltGr", code2: ["Digit1"], hint:"barra de tubería"}, 
+            {name:"@", modifier: "AltGr", code2: ["Digit2"], hint:"arroba"}, 
+            {name:"#", modifier: "AltGr", code2: ["Digit3"], hint:"almohadilla o hashtag"}, 
+            {name:"€", modifier: "AltGr", code2: ["KeyE"], hint:"euro"}, 
+            {name:"[", modifier: "AltGr", code2: ["BracketLeft"], hint:"corchete izquierdo"}, 
+            {name:"]", modifier: "AltGr", code2: ["BracketRight"], hint:"corchete derecho"}, 
+            {name:"{", modifier: "AltGr", code2: ["Quote"], hint:"llave izquierda"}, 
+            {name:"}", modifier: "AltGr", code2: ["Backslash"], hint:"llave derecha"}, 
         ];
 
         let key1="";
@@ -520,7 +512,8 @@
         let keyspressed = 0;
 
         function uplevel2(event) {
-            console.log("keyup, code" + event.code);
+            //console.log("keyup, code" + event.code);
+            console.log(event);
             keyspressed--;
             if (keyspressed == 1) {
                 key2 = "";
@@ -533,17 +526,20 @@
         }
 
         function downlevel2(event) {
-            console.log("keydown, code" + event.code);
+            //console.log("keydown, code" + event.code);
+            console.log(event);
 
+            let istrial = false;
             keyspressed++;
             if (keyspressed == 1) {
                 key1 = event.code;
             }
-            if ((keyspressed == 3) && (key2 == "Quote" || key2 == "BracketLeft")) {
+            if ((keyspressed == 3) && (key2 == "Quote" || key2 == "BracketLeft")) {  //intento de resolver el problema de que no llega el keyup de las tildes
                 keyspressed--;
                 key2 = event.code;
+                istrial = true;
             }
-            if (keyspressed == 2) {
+            if (keyspressed >= 2) {
                 key2 = event.code;
                 if (key1 == key2) {
                     //problem with long presses
@@ -551,9 +547,33 @@
                     keyspressed--;
                     return;
                 }
+                istrial = true;
+            }
+            else if (event.key == currentKey.name) {  //problema de que a veces no llega el keyup, pero si han acertado es que es un intento
+                istrial = true;
+                key2 = event.code;
+                keyspressed = 2;
+            }
+            else if ((event.ctrlKey == true && !["ControlLeft","ControlRight"].includes(event.code)) 
+                || (event.altKey == true && !["AltLeft","AltRight"].includes(event.code))
+                || (event.shiftKey ==  true && !["ShiftLeft","ShiftRight"].includes(event.code))
+                ) { //problema de que a veces no llega el keyup, pero si hay un modificador pulsado es que es un intento
+                istrial = true;
+                key2 = event.code;
+                keyspressed = 2;
+            }
+
+            if (istrial) {
                 if (animating) return; //avoid race conditions
                 guesses++;
-                if (currentKey.code1.includes(key1) && currentKey.code2.includes(key2)) {
+                let match = false;
+                if (event.key == currentKey.name) {
+                    match = true;
+                }
+                else if ((currentKey.modifier == "control") && (event.ctrlKey == true) && (currentKey.code.includes(event.code))) {
+                    match = true;
+                }
+                if (match) {
                     //right guessing condition
                     clearInterval(level1interval);
 
