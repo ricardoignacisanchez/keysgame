@@ -1,6 +1,6 @@
 ## keys game
 
-A simple game to learn the position of the keys
+A simple game to learn the position of the keys  
 Un juego sencillo para aprender las posiciones de las teclas
 
 ### The game
