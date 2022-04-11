@@ -8,6 +8,10 @@ You can find the game here:
 [In English](index_en.html)  
 [In Spanish](index_es.html)
 
+Puedes jugar aquí:
+[En español](index_es.html)
+[En inglés](index_en.html)
+
 The game has two levels:  
 Level 1: single keys. It cares only about positions on the keyboard. Thus, it will only work for the Spanish QWERTY keyboard on PC. So:
 - It will not work in android or iOS, check [What key was pressed? (You won't believe how keyboard events work)](https://www.youtube.com/watch?v=jLqTXkFtEH0&list=PLNYkxOF6rcIAKIQFsNbV0JDws_G_bnNo9)
