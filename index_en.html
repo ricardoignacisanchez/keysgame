@@ -1,0 +1,651 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="description" content="practice special keys">
+        <title>Practice special keys</title>
+        <link rel="author" href="Ricardo Sánchez">
+        <style>
+            * {
+              margin: 0;
+              padding: 0;
+              box-sizing: border-box;
+            } 
+
+            body {
+                font-family: arial, sans-serif;
+                font-size: 1em;
+                height: 100vh;
+            }
+            p {
+                padding: 10px 0 10px 0;
+            }
+            .dialog {
+                position: fixed;
+                width: 30%;
+                min-width:  25em;
+                margin: auto;
+                text-align: center;
+                border: 1px solid;
+                padding: 2em;
+                border-radius: 4px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+                left: 50%;
+                transform: translate(-50%, 0);
+                opacity: 0;
+                background-color: white;
+            }
+            .shown {
+                animation-name: shown;
+                animation-timing-function: linear;
+                animation-duration: 1s;  
+                animation-fill-mode: forwards;
+            }
+            @keyframes shown {
+                from {top: 0px;}
+                to {top: 50%; transform: translate(-50%, -50%); opacity:  1;}
+            }
+            .button {
+                background-color: #008CBA;
+                color: white;
+                font-size: 1em;
+                padding: 12px 28px;
+                border-radius: 8px;
+                margin-top: 15px;
+            }
+            .button:hover {
+                color: black;
+                background-color: lightblue;
+                transition-duration: 0.8s;
+            }
+            #game {
+                display: none;
+                width: 100%;
+                height: 100%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                background-color: #ebcf92;
+            }
+            #background {
+                min-width: 600px;
+                padding: 20px;
+                background: white;
+                border-radius: 5px;
+            }
+            #trophy {
+                --fa-rotate-angle:  -45deg;
+                color: orange;
+            }
+            #panel {
+                display: flex;
+                justify-content: space-between;
+            }
+            .keyboard {
+                vertical-align: middle;
+                --fa-rotate-angle:  10deg;
+                color: grey;
+            }
+            #score {
+                font-family: 'Bungee Inline', cursive;
+                font-size:  54px;
+            }
+            #instructions {
+                display: flex;
+                justify-content: center;
+                align-content: center;
+            }
+            #press {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            #key {
+                font-family: 'Literata', serif;
+                margin-top: -8px;
+                margin-bottom: 10px;
+                padding: 10px;
+                font-size:  3em;
+            }
+            #timepanel {
+                display: flex;
+                justify-content: center;
+            }
+            #time {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 3em;
+                padding: 0 10px;
+                border-radius: 5px;
+            }
+            .rush {
+                animation-name: rush;
+                animation-timing-function: ease-in;
+                animation-duration: 10s;  
+                animation-fill-mode: forwards;
+            }
+            @keyframes rush {
+                from {background-color: #3ebf35;}
+                to {background-color: #e91212;}
+            }
+            #bouncer {
+                font-family: 'JetBrains Mono', monospace;
+                font-size: 3em;
+                padding: 0 10px;
+                border-radius: 5px;
+                display: none;
+                position: fixed;
+            }
+            #typed {
+                opacity: 0;
+                text-align: center;
+            }
+            .warn {
+                animation-name: warn;
+                animation-timing-function: linear;
+                animation-duration: 1s;  
+            }
+            @keyframes warn {
+                from {opacity: 0;}
+                50% {opacity: 1;}
+                to {opacity:  0;}
+            }
+            #level {
+                text-align: center;
+                margin-bottom: -1.5em;
+                padding-top: 0.5em;
+                font-family: 'Press Start 2P', cursive;
+                font-size: 1.5em;
+            }
+        </style>
+    <script src="https://kit.fontawesome.com/bb3fa6b88d.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bungee+Inline&family=JetBrains+Mono:wght@200&family=Literata:wght@300&family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    </head>
+    <body>
+        <div id="previous" class="dialog">
+            <p>In this game you will practise the names of the keys on your keyboard.</p>
+            <p>You have 10 seconds per key, and the faster you get, the more points that you get.</p>
+            <p>After 10 seconds without typing the correct key, the program will ask for another key.</p>
+            <p>Get 100 points to go to the next level</p>
+            <div id="ok">
+                <input type="button" name="start" id="start" class="button" value="Start with level 1">
+            </div>
+        </div>
+        <div id="game">
+            <div id="background">
+                <div id="level">Level <span id="levelnumber">1</span></div>
+                <div id="panel">
+                    <div id="scorebox"><i id="trophy" class="fa-solid fa-trophy fa-rotate-by fa-3x"></i><span id="score">0</span>
+                    </div>
+                    <div id="lives"><i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i> <i class="fa-solid fa-keyboard fa-rotate-by fa-2x keyboard"></i>
+                    </div>
+                </div>
+                <div id="typed">You typed: <span id="typedkey">alt</span></div>
+                <div id="instructions">
+                    <div id="press"><span>Press key:</span></div>
+                    <div id="key"></div>
+                </div>
+                <div id="timepanel">
+                    <div id="time">10
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="bouncer">
+        </div>
+        <div id="win" class="dialog">
+            <p>Congratulations!! You finished level 1!</p>
+            <p>You scored <span id="pointswin"></span> points in <span id="roundswin"></span> rounds and <span id="guesseswin"></span> guesses.</p>
+            <p>In level 2, you will have to hit key combinations, as in ctrl + c. Want to go for it?</p>
+            <div class="again">
+                <input type="button" name="againwin" id="againwin" class="button" value="Play level 2">
+            </div>
+        </div>
+        <div id="lose" class="dialog">
+            <p>Ooops! You lost all your lives</p>
+            <p>You scored <span id="pointslose"></span> points in <span id="roundslose"></span> rounds and <span id="guesseslose"></span> guesses.</p>
+            <p>Want to play again?</p>
+            <div class="again">
+                <input type="button" name="againlose" id="againlose" class="button" value="Play again">
+            </div>
+        </div>
+        <div id="win2" class="dialog">
+            <p>Congratulations!! You won the game!</p>
+            <p>You scored <span id="pointswin2"></span> points in <span id="roundswin2"></span> rounds and <span id="guesseswin2"></span> guesses.</p>
+            <p>Want to play again?</p>
+            <div class="again">
+                <input type="button" name="restart" id="restart" class="button" value="Play again">
+            </div>
+        </div>
+    </body>
+    <script>
+        //todo: esto funciona solo con el teclado qwerty en español. Si se pone en otro idioma, muchas cosas fallarán. 
+        //Esto a veces se podría remediar, por ejemplo, para preguntar por el zoom+, en lugar de preguntar por el "code" (para el +), se puede preguntar por la "key". Requiere una configuración diferente, en la que se indique por qué hay que preguntar
+        //El problema es que a veces no tiene remedio. Hay teclas, como el símbolo "igual", que en español van en el nivel 2 y en inglés irían en el 1 => requerirían una configuración diferente según el idioma
+        document.getElementById("previous").classList.add('shown');
+        document.getElementById("start").addEventListener('click', ()=>start(1));
+        document.getElementById("againwin").addEventListener('click', ()=>start(2));
+        document.getElementById("againlose").addEventListener('click', ()=>start(1));
+        document.getElementById("restart").addEventListener('click', ()=>start(1));
+
+
+        //level 1: 1 key alone (shift, tab, etc.)
+        let score=0;
+        let tries=0;
+        let guesses=0;
+        let started=false; //he tenido que meter este semáforo porque al pulsar intro o espacio con el evento keydown sin capturar, parece que el navegador pulsaba el botón de start y se desencadenaba un newkey
+        document.getElementById("score").innerHTML = score;
+        const level1keys = [
+            {name:"escape", code: "Escape", hint:""}, 
+            {name:"tab", code: "Tab", hint:""}, 
+            {name:"caps lock", code: "CapsLock", hint:"NOT the shift key"}, 
+            {name:"num lock", code: "NumLock", hint:"number lock"}, 
+            {name:"alt", code: "AltLeft", hint:"left"}, 
+            {name:"left shift", code: "ShiftLeft", hint:"left"}, 
+            {name:"left control", code: "ControlLeft", hint:"left"}, 
+            {name:"space", code: "Space", hint:""}, 
+            {name:"alt graph", code: "AltRight", hint:"right"}, 
+            {name:"context menu", code: "ContextMenu", hint:""}, 
+            {name:"right control", code: "ControlRight", hint:"right"}, 
+            {name:"left cursor", code: "ArrowLeft", hint:"left arrow"}, 
+            {name:"right cursor", code: "ArrowRight", hint:"right arrow"}, 
+            {name:"up cursor", code: "ArrowUp", hint:"up arrow"}, 
+            {name:"down cursor", code: "ArrowDown", hint:"down arrow"}, 
+            {name:"right shift", code: "ShiftRight", hint:"right"}, 
+            {name:"enter", code: "Enter", hint:""}, 
+            {name:"backspace", code: "Backspace", hint:""}, 
+            {name:"delete", code: "Delete", hint:""}, 
+            {name:"insert", code: "Insert", hint:""}, 
+            {name:"home", code: "Home", hint:""}, 
+            {name:"end", code: "End", hint:""}, 
+            {name:"page down", code: "PageDown", hint:""}, 
+            {name:"page up", code: "PageUp", hint:""}, 
+            {name:"º", code: "Backquote", hint:"as in 1º"}, 
+            {name:"¡", code: "Equal", hint:"open exclamation"}, 
+            {name:"'", code: "Minus", hint:"single quote or apostrophe"}, 
+            {name:"ç", code: "Backslash", hint:"c with cedille"}, 
+            {name:"+", code: "BracketRight", hint:"plus sign, alphanumeric keyboard"}, 
+            {name:"-", code: "Slash", hint:"minus sign, alphanumeric keyboard"}, 
+            {name:".", code: "Period", hint:"period"}, 
+            {name:",", code: "Comma", hint:"comma"}, 
+            {name:"ñ", code: "Semicolon", hint:""}, 
+            {name:"/", code: "NumpadDivide", hint:"slash, extended keyboard"}, 
+            {name:"*", code: "NumpadMultiply", hint:"asterisk, extended keyboard"}, 
+            {name:"+", code: "NumpadAdd", hint:"plus sign, extended keyboard"}, 
+            {name:"-", code: "NumpadSubtract", hint:"minus sign, extended keyboard"}, 
+            {name:".", code: "NumpadDecimal", hint:"decimal comma, extended keyboard"}, 
+            {name:"right enter", code: "NumpadEnter", hint:"enter, extended keyboard"}, 
+        ];
+        let level1codes = [];
+        level1keys.forEach(element => level1codes[element.code]=element.name);
+
+
+        let currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+        let remainingtime=10.1;
+        let level1interval = 0;
+        let listeneradded = false;
+        let animating = false;
+
+        function newKey(level) {
+            tries++;
+            if (level == 1) {
+                currentKey=level1keys[Math.floor(Math.random() * level1keys.length)];
+            }
+            else {
+                currentKey=level2keys[Math.floor(Math.random() * level2keys.length)];
+            }
+            document.getElementById("key").innerHTML = currentKey.name + ((currentKey.hint != "")?" (" + currentKey.hint + ")":"");
+            remainingtime=10.1;
+            document.getElementById("time").classList.remove('rush');
+            void document.getElementById("time").offsetWidth; //https://css-tricks.com/restart-css-animation/
+
+            if (!listeneradded) {
+                if (level == 1) {
+                    document.addEventListener('keydown', capturelevel1, false);
+                }
+                else {
+                    document.addEventListener('keydown', downlevel2, false);
+                    document.addEventListener('keyup', uplevel2, false);
+                }
+                listeneradded = true;
+            }
+            level1interval = setInterval(()=>{
+                remainingtime = remainingtime - 0.1;
+                if (remainingtime <= 0) {
+                    //losing life condition
+                    //important not to respond to events during the animation
+                    if (level == 1) {
+                        document.removeEventListener('keydown', capturelevel1, false);
+                    }
+                    else {
+                        animating = true;
+                    }
+                    listeneradded = false;
+
+                    clearInterval(level1interval);
+                    let bouncer = document.getElementById("bouncer");
+                    let timer = document.getElementById("time");
+                    bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                    bouncer.innerHTML = timer.innerHTML;
+                    bouncer.style.display = 'block';
+                    let animation = bouncer.animate([
+                      // keyframes
+                      { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                      { top: document.getElementById("lives").offsetTop + "px", left: document.getElementById("lives").offsetLeft + "px"}
+                    ], {
+                      // timing options
+                      duration: 500,
+                      iterations: 1
+                    });
+                    animation.onfinish = () => {
+                        let keyboard = Array.from(document.getElementById("lives").children).find(element => element.style.display != "none");
+                        let keyboardx = document.getElementById("lives").offsetLeft;
+                        let keyboardy = document.getElementById("lives").offsetTop;
+                        keyboard.style.position="fixed";
+                        let fall = keyboard.animate([
+                          // keyframes
+                          { top: keyboardy + "px", left: keyboardx + "px"},
+                          { top: (document.getElementById("background").offsetTop + document.getElementById("background").offsetHeight) + "px", left: keyboardx + "px", opacity:0},
+                        ], {
+                          // timing options
+                          duration: 600,
+                          iterations: 1
+                        });
+                        fall.onfinish = () => {
+                            keyboard.style.display = 'none';
+                            animating = false;
+
+                            //if (document.getElementById("lives").children.length == 0) {
+                            if (Array.from(document.getElementById("lives").children).find(element => element.style.display != "none") === undefined) {
+                                //losing condition
+                                document.getElementById("pointslose").innerHTML = document.getElementById("score").innerHTML;
+                                document.getElementById("roundslose").innerHTML = tries;
+                                document.getElementById("guesseslose").innerHTML = guesses;
+                                document.getElementById("lose").classList.add('shown');
+                                document.removeEventListener('keydown', capturelevel1);
+                                document.removeEventListener('keydown', downlevel2);
+                                document.removeEventListener('keyup', uplevel2);
+                                started = false;
+                            }
+                            else  {
+                                newKey(level);
+                            }
+                        };
+                    };
+                }
+                else {
+                    document.getElementById("time").innerHTML = remainingtime.toLocaleString(undefined, { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+                }
+            }, 100);
+            document.getElementById("time").classList.add('rush');
+        }
+
+        function updateScore() {
+            const scoreDelta = Math.round(remainingtime); //(remainingtime - 5) * 2; can add or substract points
+            score += scoreDelta;
+            document.getElementById("score").innerHTML = score;
+        }
+
+        function start(level) {
+            if (started) return;
+            started = true;
+            score=0;
+            tries=0;
+            guesses=0;
+
+            document.getElementById("score").innerHTML = 0;
+            document.getElementById("levelnumber").innerHTML = level;
+            if (level == 1) {
+                Array.from(document.getElementById("lives").children).forEach(element => {element.style.display = "inline"; element.style.position="static"});
+            }
+
+            document.getElementById("previous").classList.remove('shown');
+            document.getElementById("win").classList.remove('shown');
+            document.getElementById("lose").classList.remove('shown');
+            document.getElementById("win2").classList.remove('shown');
+            document.getElementById("game").style.display="flex";
+            
+            newKey(level);
+        }
+     
+
+        function capturelevel1(event) {
+            console.log(event);
+
+            guesses++;
+            if (event.code == currentKey.code) {
+                //right guessing condition
+                clearInterval(level1interval);
+                document.removeEventListener('keydown', capturelevel1); //important not to respond to events during the animation
+                listeneradded = false;
+
+                let bouncer = document.getElementById("bouncer");
+                let timer = document.getElementById("time");
+                bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                bouncer.innerHTML = timer.innerHTML;
+                bouncer.style.display = 'block';
+                let animation = bouncer.animate([
+                  // keyframes
+                  { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                  { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
+                ], {
+                  // timing options
+                  duration: 500,
+                  iterations: 1
+                });
+                animation.onfinish = () => {
+                    updateScore();
+                    if (document.getElementById("score").innerHTML >= 100) {
+                        //winning condition
+                        document.getElementById("pointswin").innerHTML = document.getElementById("score").innerHTML;
+                        document.getElementById("roundswin").innerHTML = tries;
+                        document.getElementById("guesseswin").innerHTML = guesses;
+                        document.getElementById("win").classList.add('shown');
+                        document.removeEventListener('keydown', capturelevel1);
+                        listeneradded = false;
+                        started = false;
+                    }
+                    else  {
+                        newKey(1);
+                    }
+                }
+            }
+            else {
+                //wrong guessing condition
+                if (event.code in level1codes) {
+                    document.getElementById("typedkey").innerHTML = level1codes[event.code];
+                }
+                else {
+                    if (event.code.startsWith("Key")) {
+                        document.getElementById("typedkey").innerHTML = event.key;
+                    }
+                    else {
+                        document.getElementById("typedkey").innerHTML = event.code;
+                    }
+                }
+                document.getElementById("typed").classList.remove('warn');
+                void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
+                document.getElementById("typed").classList.add('warn');
+            }
+            event.preventDefault();
+        }
+
+        const level2keys = [
+            {name:"ctrl + c", modifier: "control", code: ["KeyC"], hint:""},
+            {name:"ctrl + v", modifier: "control", code: ["KeyV"], hint:""},
+            {name:"ctrl + x", modifier: "control", code: ["KeyX"], hint:""},
+            {name:"ctrl + z", modifier: "control", code: ["KeyZ"], hint:""},
+            {name:"ctrl +", modifier: "control", code: ["BracketRight", "NumpadAdd"], hint:"zoom in"},
+            {name:"ctrl -", modifier: "control", code: ["Slash", "NumpadSubtract"], hint:"zoom out"},
+
+            {name:"ª", modifier: "shift", code: ["Backquote"], hint:"as in 1ª"},
+            {name:"!", modifier: "shift", code: ["Digit1"], hint:"exclamation mark"},
+            {name:"\"", modifier: "shift", code: ["Digit2"], hint:"double quote"},
+            {name:"$", modifier: "shift", code: ["Digit4"], hint:"dollar"},
+            {name:"%", modifier: "shift", code: ["Digit5"], hint:"percentage"},
+            {name:"&", modifier: "shift", code: ["Digit6"], hint:"ampersand"},
+            {name:"/", modifier: "shift", code: ["Digit7"], hint:"slash in 7"},
+            {name:"(", modifier: "shift", code: ["Digit8"], hint:"left parenthesis"},
+            {name:")", modifier: "shift", code: ["Digit9"], hint:"right parenthesis"},
+            {name:"=", modifier: "shift", code: ["Digit0"], hint:"equals"},
+            {name:"?", modifier: "shift", code: ["Minus"], hint:"question mark"},
+            {name:"¿", modifier: "shift", code: ["Equal"], hint:"open question mark"},
+            {name:";", modifier: "shift", code: ["Comma"], hint:"semicolon"},
+            {name:":", modifier: "shift", code: ["Period"], hint:"colon"},
+            {name:"_", modifier: "shift", code: ["Slash"], hint:"urderscore"},
+
+            {name:"\\", modifier: "AltGr", code2: ["Backquote"], hint:"backslash"}, 
+            {name:"|", modifier: "AltGr", code2: ["Digit1"], hint:"pipe"}, 
+            {name:"@", modifier: "AltGr", code2: ["Digit2"], hint:"at"}, 
+            {name:"#", modifier: "AltGr", code2: ["Digit3"], hint:"hash"}, 
+            {name:"€", modifier: "AltGr", code2: ["KeyE"], hint:"euro"}, 
+            {name:"[", modifier: "AltGr", code2: ["BracketLeft"], hint:"left bracket"}, 
+            {name:"]", modifier: "AltGr", code2: ["BracketRight"], hint:"right bracket"}, 
+            {name:"{", modifier: "AltGr", code2: ["Quote"], hint:"left curly brace"}, 
+            {name:"}", modifier: "AltGr", code2: ["Backslash"], hint:"right curly brace"}, 
+        ];
+
+        let key1="";
+        let key2="";
+        let keyspressed = 0;
+
+        function uplevel2(event) {
+            //console.log("keyup, code" + event.code);
+            console.log(event);
+            keyspressed--;
+            if (keyspressed == 1) {
+                key2 = "";
+            }
+            if (keyspressed == 0) {
+                key1 = "";
+                key2 = "";
+            }
+            //console.log("KEYUP. keyspressed: " + keyspressed + ", key1: " + key1 + ", key2: " + key2);
+        }
+
+        function downlevel2(event) {
+            //console.log("keydown, code" + event.code);
+            console.log(event);
+
+            let istrial = false;
+            keyspressed++;
+            if (keyspressed == 1) {
+                key1 = event.code;
+            }
+            if ((keyspressed == 3) && (key2 == "Quote" || key2 == "BracketLeft")) {  //intento de resolver el problema de que no llega el keyup de las tildes
+                keyspressed--;
+                key2 = event.code;
+                istrial = true;
+            }
+            if (keyspressed >= 2) {
+                key2 = event.code;
+                if (key1 == key2) {
+                    //problem with long presses
+                    key2="";
+                    keyspressed--;
+                    return;
+                }
+                istrial = true;
+            }
+            else if (event.key == currentKey.name) {  //problema de que a veces no llega el keyup, pero si han acertado es que es un intento
+                istrial = true;
+                key2 = event.code;
+                keyspressed = 2;
+            }
+            else if ((event.ctrlKey == true && !["ControlLeft","ControlRight"].includes(event.code)) 
+                || (event.altKey == true && !["AltLeft","AltRight"].includes(event.code))
+                || (event.shiftKey ==  true && !["ShiftLeft","ShiftRight"].includes(event.code))
+                ) { //problema de que a veces no llega el keyup, pero si hay un modificador pulsado es que es un intento
+                istrial = true;
+                key2 = event.code;
+                keyspressed = 2;
+            }
+
+            if (istrial) {
+                if (animating) return; //avoid race conditions
+                guesses++;
+                let match = false;
+                if (event.key == currentKey.name) {
+                    match = true;
+                }
+                else if ((currentKey.modifier == "control") && (event.ctrlKey == true) && (currentKey.code.includes(event.code))) {
+                    match = true;
+                }
+                if (match) {
+                    //right guessing condition
+                    clearInterval(level1interval);
+
+                    let bouncer = document.getElementById("bouncer");
+                    let timer = document.getElementById("time");
+                    bouncer.style.backgroundColor = getComputedStyle(document.getElementById('time'))['background-color'];
+                    bouncer.innerHTML = timer.innerHTML;
+                    bouncer.style.display = 'block';
+                    let animating = true;
+                    let animation = bouncer.animate([
+                        // keyframes
+                        { top: timer.offsetTop + "px", left: timer.offsetLeft + "px"},
+                        { top: document.getElementById("score").offsetTop + "px", left: document.getElementById("score").offsetLeft + "px"}
+                    ], {
+                        // timing options
+                        duration: 500,
+                        iterations: 1
+                    });
+                    animation.onfinish = () => {
+                        updateScore();
+                        animating = false;
+                        if (document.getElementById("score").innerHTML >= 100) {
+                            //winning condition
+                            document.getElementById("pointswin2").innerHTML = document.getElementById("score").innerHTML;
+                            document.getElementById("roundswin2").innerHTML = tries;
+                            document.getElementById("guesseswin2").innerHTML = guesses;
+                            document.getElementById("win2").classList.add('shown');
+                            document.removeEventListener('keydown', downlevel2);
+                            document.removeEventListener('keyup', uplevel2);
+                            listeneradded = false;
+                            started = false;
+                        }
+                        else  {
+                            newKey(2);
+                        }
+                    }
+                }
+                else {
+                    //wrong guessing condition
+                    let keyname1 = "", keyname2 = "";
+                    if (key1 in level1codes) {
+                        keyname1 = level1codes[key1];
+                    }
+                    else if (key1.startsWith("Key")) {
+                        keyname1 = key1.substring(3);
+                    }
+                    else if (key1.startsWith("Digit")) {
+                        keyname1 = key1.substring(5);
+                    }
+                    else {
+                        keyname1 = key1;
+                    }
+                    if (key2 in level1codes) {
+                        keyname2 = level1codes[key2];
+                    }
+                    else if (key2.startsWith("Key")) {
+                        keyname2 = key2.substring(3);
+                    }
+                    else if (key2.startsWith("Digit")) {
+                        keyname2 = key2.substring(5);
+                    }
+                    else {
+                        keyname2 = key2;
+                    }
+                    document.getElementById("typedkey").innerHTML = keyname1 + " + " + keyname2;
+                    document.getElementById("typed").classList.remove('warn');
+                    void document.getElementById("typed").offsetWidth; //https://css-tricks.com/restart-css-animation/
+                    document.getElementById("typed").classList.add('warn');
+                }
+            }
+            //console.log("KEYDOWN. keyspressed: " + keyspressed + ", key1: " + key1 + ", key2: " + key2);
+            event.preventDefault();
+        }
+    </script>
+</html>
