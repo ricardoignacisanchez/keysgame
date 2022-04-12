@@ -1,16 +1,12 @@
 ## keys game
 
-A simple game to learn the position of the keys  
-Un juego sencillo para aprender las posiciones de las teclas
+A simple game to learn the position of the keys.  
+[Play it here](index_en.html)
+
+Un juego sencillo para aprender las posiciones de las teclas.  
+[Juega aquí](index_es.html)
 
 ### The game
-You can find the game here:  
-[In English](index_en.html)  
-[In Spanish](index_es.html)
-
-Puedes jugar aquí:
-[En español](index_es.html)
-[En inglés](index_en.html)
 
 The game has two levels:  
 Level 1: single keys. It cares only about positions on the keyboard. Thus, it will only work for the Spanish QWERTY keyboard on PC. So:
